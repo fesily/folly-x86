@@ -68,7 +68,9 @@ struct gf_powers_make {
 };
 
 } // namespace
-
+#if !FOLLY_X64
+extern uint64_t _mm_cvtsi128_si64(__m128i a);
+#endif
 #if FOLLY_SSE_PREREQ(4, 2)
 
 // Reduction taken from

@@ -96,8 +96,11 @@ struct pthread_startup_info {
   void* (*startupFunction)(void*);
   void* startupArgument;
 };
-
+#ifdef _WIN32
+DWORD WINAPI internal_pthread_thread_start(void* arg) {
+#else
 DWORD internal_pthread_thread_start(void* arg) {
+#endif
   // We are now in the new thread.
   auto startupInfo = reinterpret_cast<pthread_startup_info*>(arg);
   current_thread_self = startupInfo->thread;

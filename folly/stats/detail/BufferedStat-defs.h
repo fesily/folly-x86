@@ -20,6 +20,7 @@
 
 #include <folly/stats/detail/DigestBuilder-defs.h>
 #include <folly/stats/detail/SlidingWindow-defs.h>
+#include <glog/logging.h>
 
 namespace folly {
 namespace detail {

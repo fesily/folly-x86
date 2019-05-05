@@ -38,7 +38,11 @@
 #include <boost/preprocessor/arithmetic/add.hpp>
 #include <boost/preprocessor/arithmetic/sub.hpp>
 #include <boost/preprocessor/repetition/repeat_from_to.hpp>
-
+#if !FOLLY_X64
+#include <gflags/gflags.h>
+#include <folly/hash/detail/_mm_cvtsi128_si64.h>
+#include <folly/hash/detail/_mm_crc32_u64.h>
+#endif
 namespace folly {
 namespace detail {
 

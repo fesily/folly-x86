@@ -96,7 +96,11 @@ struct Nehalem : public Default {
     asm("popcntq %1, %0" : "=r"(result) : "r"(value));
     return result;
 #else
-    return uint64_t(_mm_popcnt_u64(value));
+#if FOLLY_X64
+      return uint64_t(_mm_popcnt_u64(value));
+#else
+      return Default::popcount(value);
+#endif
 #endif
   }
 };
@@ -115,7 +119,11 @@ struct Haswell : public Nehalem {
     asm("blsrq %1, %0" : "=r"(result) : "r"(value));
     return result;
 #else
-    return _blsr_u64(value);
+#if FOLLY_X64
+      return _blsr_u64(value);
+#else
+      return Default::blsr(value);
+#endif
 #endif
   }
 
@@ -132,7 +140,11 @@ struct Haswell : public Nehalem {
     asm("bextrq %2, %1, %0" : "=r"(result) : "r"(value), "r"(pattern));
     return result;
 #else
-    return _bextr_u64(value, start, length);
+#if FOLLY_X64
+      return _bextr_u64(value, start, length);
+#else
+      return Default::bextr(value, start, length);
+#endif
 #endif
   }
 
@@ -144,7 +156,11 @@ struct Haswell : public Nehalem {
     asm("bzhiq %2, %1, %0" : "=r"(result) : "r"(value), "r"(index64));
     return result;
 #else
-    return _bzhi_u64(value, index);
+#if FOLLY_X64
+      return _bzhi_u64(value, index);
+#else
+      return Default::bzhi(value, index);
+#endif
 #endif
   }
 };

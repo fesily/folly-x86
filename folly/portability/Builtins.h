@@ -51,8 +51,22 @@ FOLLY_ALWAYS_INLINE int __builtin_clzl(unsigned long x) {
 }
 
 FOLLY_ALWAYS_INLINE int __builtin_clzll(unsigned long long x) {
+#if FOLLY_X64
   unsigned long index;
   return int(_BitScanReverse64(&index, x) ? 63 - index : 64);
+#else
+    unsigned long r;
+    if (_BitScanReverse(&r, uint32_t(x >> 32)))
+        r += 32;
+    else
+    {
+        if (!_BitScanReverse(&r, uint32_t(x)))
+        {
+            return 64;
+        }
+    }
+    return 63 - r;
+#endif
 }
 
 FOLLY_ALWAYS_INLINE int __builtin_ctz(unsigned int x) {
@@ -65,8 +79,20 @@ FOLLY_ALWAYS_INLINE int __builtin_ctzl(unsigned long x) {
 }
 
 FOLLY_ALWAYS_INLINE int __builtin_ctzll(unsigned long long x) {
-  unsigned long index;
+#if FOLLY_X64
+    unsigned long long index;
   return int(_BitScanForward64(&index, x) ? index : 64);
+#else
+    unsigned long r;
+    if (!_BitScanForward(&r, uint32_t(x)) )
+    {
+        if (_BitScanForward(&r, uint32_t(x >> 32)))
+            r += 32;
+        else
+            r = 64;
+    }
+    return r;
+#endif
 }
 
 FOLLY_ALWAYS_INLINE int __builtin_ffs(int x) {
@@ -79,8 +105,21 @@ FOLLY_ALWAYS_INLINE int __builtin_ffsl(long x) {
 }
 
 FOLLY_ALWAYS_INLINE int __builtin_ffsll(long long x) {
+#if FOLLY_X64
   unsigned long index;
   return int(_BitScanForward64(&index, (unsigned long long)x) ? index + 1 : 0);
+#else
+    unsigned long r;
+    if (!_BitScanForward(&r, uint32_t(x)))
+    {
+        if (_BitScanForward(&r, uint32_t(x >> 32)))
+            r += 32;
+        else
+            r = -1;
+    }
+    r++;
+    return r;
+#endif
 }
 
 FOLLY_ALWAYS_INLINE int __builtin_popcount(unsigned int x) {
@@ -93,7 +132,11 @@ FOLLY_ALWAYS_INLINE int __builtin_popcountl(unsigned long x) {
 }
 
 FOLLY_ALWAYS_INLINE int __builtin_popcountll(unsigned long long x) {
+#if FOLLY_X64
   return int(__popcnt64(x));
+#else
+  return int(__popcnt(uint32_t(x >> 32)) + __popcnt((uint32_t)x));
+#endif
 }
 
 FOLLY_ALWAYS_INLINE void* __builtin_return_address(unsigned int frame) {

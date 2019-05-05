@@ -57,7 +57,7 @@ set(FOLLY_SUPPORT_SHARED_LIBRARY "${BUILD_SHARED_LIBS}")
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # Check target architecture
   if (NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-    message(FATAL_ERROR "Folly requires a 64bit target architecture.")
+    message(FATAL_WARN "Folly requires a 64bit target architecture.")
   endif()
 
   if (MSVC_VERSION LESS 1900)
