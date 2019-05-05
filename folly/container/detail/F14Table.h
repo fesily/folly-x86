@@ -560,8 +560,10 @@ struct alignas(kRequiredVectorAlignment) F14Chunk {
   }
 
   Item* itemAddr(std::size_t i) const {
+    // msvc v142 internal compiler error
+    auto p1 = static_cast<void const*>(&rawItems_[i]);
     return static_cast<Item*>(
-        const_cast<void*>(static_cast<void const*>(&rawItems_[i])));
+        const_cast<void*>(p1));
   }
 
   Item& item(std::size_t i) {

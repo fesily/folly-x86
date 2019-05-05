@@ -1510,7 +1510,11 @@ struct hasher<
     // would be better.  std::is_pod is not enough, because POD types
     // can contain pointers and padding.  Also, floating point numbers
     // may be == without being bit-identical.
-    return hash::SpookyHashV2::Hash64(r.begin(), r.size() * sizeof(T), 0);
+#if FOLLY_X64
+      return hash::SpookyHashV2::Hash64(r.begin(), r.size() * sizeof(T), 0);
+#else
+      return hash::SpookyHashV2::Hash32(r.begin(), r.size() * sizeof(T), 0);
+#endif
   }
 };
 
